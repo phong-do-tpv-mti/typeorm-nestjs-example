@@ -29,4 +29,9 @@ export class CrudController {
   async deletePostByTag(@Param('tagName') tagName: string) {
     return await this.postCRUDService.deletePostByTag(tagName);
   }
+
+  @Get('create-multi-tags')
+  async createMultipleTag() {
+    return await this.postCRUDService.createMultipleTag();
+  }
 }

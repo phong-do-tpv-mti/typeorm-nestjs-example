@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Comment } from 'src/entities/comment.entity';
 import { Post } from 'src/entities/post.entity';
 import { Tag } from 'src/entities/tag.entity';
-import { Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 
 @Injectable()
 export class CrudService {
@@ -14,6 +14,7 @@ export class CrudService {
     private commentRepository: Repository<Comment>,
     @InjectRepository(Tag)
     private tagRepository: Repository<Tag>,
+    private dataSource: DataSource,
   ) {}
 
   async create() {
@@ -87,6 +88,27 @@ export class CrudService {
       return {
         message: 'Tag not found',
       };
+    }
+  }
+
+  async createMultipleTag() {
+    const queryRunner = this.dataSource.createQueryRunner();
+    const tags = Array.from({ length: 100 }).map((item, index) => {
+      const tag = new Tag();
+      tag.name = `Tag ${(index + 1).toString().padStart(5, '0')}`;
+      return tag;
+    });
+
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+    try {
+      await Promise.all(tags.map((tag) => queryRunner.manager.save(tag)));
+      await queryRunner.commitTransaction();
+      return tags;
+    } catch (err) {
+      await queryRunner.rollbackTransaction();
+    } finally {
+      await queryRunner.release();
     }
   }
 }
