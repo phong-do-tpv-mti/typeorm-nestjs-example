@@ -3,6 +3,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { dataSourceOptions } from './data-source';
+import { Profile } from './entities/profile.entity';
+import { User } from './entities/user.entity';
 import { PostModule } from './modules/post/post.module';
 import { UserModule } from './modules/user/user.module';
 
@@ -10,7 +12,7 @@ import { UserModule } from './modules/user/user.module';
   imports: [
     TypeOrmModule.forRoot({
       ...dataSourceOptions,
-      entities: undefined,
+      entities: [User, Profile],
       migrations: undefined,
       autoLoadEntities: true,
     }),

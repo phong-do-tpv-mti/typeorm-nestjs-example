@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Profile } from './profile.entity';
 
 @Entity()
 export class User {
@@ -13,4 +14,10 @@ export class User {
 
   @Column({ default: true })
   isActive: boolean;
+
+  @OneToOne(() => Profile, (profile) => profile.user, {
+    onDelete: 'CASCADE',
+    cascade: ['insert', 'update'],
+  })
+  profile: Profile;
 }
