@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Comment } from 'src/entities/comment.entity';
 import { Post } from 'src/entities/post.entity';
+import { Tag } from 'src/entities/tag.entity';
 import { Repository } from 'typeorm';
 
 @Injectable()
@@ -11,6 +12,8 @@ export class CrudService {
     private postRepository: Repository<Post>,
     @InjectRepository(Comment)
     private commentRepository: Repository<Comment>,
+    @InjectRepository(Tag)
+    private tagRepository: Repository<Tag>,
   ) {}
 
   async create() {
@@ -49,5 +52,41 @@ export class CrudService {
 
   async remove(id: number) {
     return await this.postRepository.delete(id);
+  }
+
+  async createPostWithTag(tagName: string) {
+    let tag = await this.tagRepository.findOne({ where: { name: tagName } });
+    if (!tag) {
+      tag = new Tag();
+      tag.name = tagName;
+      await this.tagRepository.save(tag);
+    }
+
+    const post = new Post();
+    post.title = `Post of tag: ${tagName}`;
+    post.tags = [tag];
+    return await this.postRepository.save(post);
+  }
+
+  async findTagByName(tagName: string) {
+    return this.tagRepository.findOne({
+      where: { name: tagName },
+      relations: ['posts'],
+    });
+  }
+
+  async deletePostByTag(tagName: string) {
+    const tag = await this.findTagByName(tagName);
+    if (tag) {
+      const postsToDelete = tag.posts;
+      return await Promise.all([
+        this.postRepository.remove(postsToDelete),
+        this.tagRepository.remove(tag),
+      ]);
+    } else {
+      return {
+        message: 'Tag not found',
+      };
+    }
   }
 }

@@ -1,5 +1,13 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinTable,
+  ManyToMany,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { Comment } from './comment.entity';
+import { Tag } from './tag.entity';
 
 @Entity()
 export class Post {
@@ -14,4 +22,11 @@ export class Post {
     onDelete: 'CASCADE',
   })
   comments: Comment[];
+
+  @ManyToMany(() => Tag, (tag) => tag.posts, {
+    cascade: true,
+    onDelete: 'CASCADE',
+  })
+  @JoinTable()
+  tags: Tag[];
 }

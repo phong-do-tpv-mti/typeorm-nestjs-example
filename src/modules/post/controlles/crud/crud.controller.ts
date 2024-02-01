@@ -19,4 +19,14 @@ export class CrudController {
   async deleteUser(@Param('id', ParseIntPipe) id: number) {
     return await this.postCRUDService.remove(id);
   }
+
+  @Get('create-post-tag/:tagName')
+  async createPostWithTag(@Param('tagName') tagName: string) {
+    return await this.postCRUDService.createPostWithTag(tagName);
+  }
+
+  @Get('delete-post-tag/:tagName')
+  async deletePostByTag(@Param('tagName') tagName: string) {
+    return await this.postCRUDService.deletePostByTag(tagName);
+  }
 }
