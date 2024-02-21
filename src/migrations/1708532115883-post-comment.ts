@@ -1,7 +1,7 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
-export class PostComment1706778757919 implements MigrationInterface {
-  name = 'PostComment1706778757919';
+export class PostComment1708532115883 implements MigrationInterface {
+  name = 'PostComment1708532115883';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(
